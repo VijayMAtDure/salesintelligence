@@ -1,0 +1,27 @@
+# Copy to config.ini for local dev. Never commit the real config.ini - see .gitignore.
+# Read by config/settings/base.py via configparser, only to fill os.environ.setdefault()
+# gaps - a real environment variable (as k8s injects in the cluster) always wins over
+# whatever is in here, so this file only matters for local/manual runs, never in a pod.
+
+[secrets]
+django_secret_key = change-me
+business_tz = Asia/Kolkata
+
+surrealdb_endpoint = http://127.0.0.1:8000
+surrealdb_namespace = salesdb2
+surrealdb_database = salesdb2
+surrealdb_username = root
+surrealdb_password = root
+
+gpu_worker_host = 204.12.205.2
+gpu_worker_callback_token = change-me
+
+openai_api_key =
+
+celery_broker_url = redis://localhost:6379/0
+celery_result_backend = redis://localhost:6379/0
+
+# prod.py only:
+# database_url = postgres://user:pass@host:5432/vitasale_platform
+# django_allowed_hosts = your-domain.com
+# cors_allowed_origins = https://your-frontend.com

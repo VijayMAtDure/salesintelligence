@@ -1,0 +1,10 @@
+# Container-only additions on top of the real app dependencies (requirements/base.txt) --
+# kept here, not merged into base.txt, because gunicorn/whitenoise are meaningless for
+# local dev (manage.py runserver) and this file exists only so
+# docker/build-and-push.sh's "no requirements.txt at $FORECAST_SRC root -> use the k8s
+# repo's template" fallback never triggers: with this file present, the image always
+# installs the real app's deps, never the (now-legacy) forecast-api scaffold's.
+-r requirements/base.txt
+
+gunicorn==23.0.0
+whitenoise==6.7.0

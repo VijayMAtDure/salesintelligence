@@ -1,0 +1,55 @@
+# VITASale Sales Intelligence Engine — Phase 1 configuration
+# See ../PHASE1_PHASE2_EXECUTION_FLOW.md for the stage-by-stage design this config drives.
+
+database:
+  endpoint: "http://127.0.0.1:8000"
+  namespace: "salesdb2"
+  database: "salesdb2"
+  username: "root"
+  password: "root"
+
+feature_version: "1.2"
+
+pilot:
+  # Everything before this is legacy migrated CRM data (reference doc §2) — never treat as live.
+  start_date: "2026-07-31T00:00:00Z"
+  # Single tenant throughout this dataset. Use this constant everywhere rather than
+  # trusting per-row organisationId fields — confirmed 2026-08-20: 2/3804 call_response
+  # rows carry organisationId='organisation:1004' (a mislabeling, same campaign/lead
+  # namespace as everything else — not a different tenant).
+  organisation: "organisation:4"
+
+timezone:
+  business_tz: "Asia/Kolkata"
+  # call_response.createdDate is a naive IST string (no offset) — must be localized to
+  # business_tz then converted to UTC before comparing to any other timestamp
+  # (reference doc §6 item 7).
+
+sentiment_encoding:
+  POSITIVE: 1
+  NEUTRAL: 0
+  NEGATIVE: -1
+  MIXED: 0   # confirmed 2026-08-20 — folded into neutral, MIXED is 1 of 3804 rows
+
+momentum:
+  stalled_days_threshold: 14   # not yet tuned — revisit during Stage 9 validation
+
+# doc §7.2 known-future covariates + §20 timezone-risk mitigation ("preserve organisation
+# business timezone for business-hour features"). Evaluated in business_tz, not UTC.
+business_hours:
+  start_hour: 9
+  end_hour: 19
+  working_days: [0, 1, 2, 3, 4, 5]   # Mon-Sat (Python weekday(): Mon=0, Sun=6)
+
+backfill:
+  # doc §12.1: backfill mode must support a configurable date range.
+  # Defaults to the full pilot history since only ~3 weeks of data exists (doc §21 "agreed period").
+  default_start_date: null   # null = pilot.start_date
+  default_end_date: null     # null = latest available call_decision.processed_at
+
+incremental:
+  poll_interval_minutes: 20   # doc §18: "near-real-time features every 15-30 minutes"
+
+job_names:
+  feature_snapshot_builder: "feature_snapshot_builder"
+  timeseries_aggregator: "timeseries_aggregator"

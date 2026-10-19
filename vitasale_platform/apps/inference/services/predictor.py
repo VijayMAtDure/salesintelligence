@@ -4,9 +4,18 @@ a real trained model artifact, same reuse pattern as apps.training.services.job_
 Lighter-weight than training (a single score, not a fit), so this runs synchronously inside
 the Celery task rather than needing its own queue/lock — no GPU exclusivity concern for a
 single forward pass at this data volume.
+
+That "no exclusivity concern" assumption held for cheap models but not for real AutoGluon
+artifacts: each predict.py subprocess loads its own full copy of the model, and two of those
+running at once (e.g. two gthread request threads in the same web pod both handling a chat
+question, or a Celery worker executing one task while prefetch has already started the next)
+share the SAME container memory limit — confirmed live, this OOMKilled both a worker pod and
+a web pod in load-test round 1. _INFERENCE_SEMAPHORE caps concurrent real subprocess runs
+PER PROCESS to whatever this pod can actually afford.
 """
 import json
 import subprocess
+import threading
 from pathlib import Path
 
 from django.conf import settings
@@ -17,6 +26,9 @@ from apps.inference.models import InferenceJob
 # InferenceJob has no dedicated event model (unlike Training/Pipeline) — results and errors
 # are stored directly on the job row, since a single inference call has no meaningful
 # multi-stage lifecycle worth logging incrementally.
+
+_INFERENCE_SEMAPHORE = threading.Semaphore(
+    getattr(settings, "MAX_CONCURRENT_INFERENCE_SUBPROCESSES", 1))
 
 
 def run_inference(job_id: int) -> None:
@@ -46,14 +58,15 @@ def run_inference(job_id: int) -> None:
         args += ["--target", job.target, "--horizon", str(horizon),
                  "--transform", mv.transform or "RAW"]
 
-    try:
-        result = subprocess.run(args, capture_output=True, timeout=300, text=True)
-    except subprocess.TimeoutExpired:
-        job.status = "FAILED"
-        job.error_message = "inference exceeded 5 minute timeout"
-        job.finished_at = timezone.now()
-        job.save(update_fields=["status", "error_message", "finished_at"])
-        return
+    with _INFERENCE_SEMAPHORE:
+        try:
+            result = subprocess.run(args, capture_output=True, timeout=300, text=True)
+        except subprocess.TimeoutExpired:
+            job.status = "FAILED"
+            job.error_message = "inference exceeded 5 minute timeout"
+            job.finished_at = timezone.now()
+            job.save(update_fields=["status", "error_message", "finished_at"])
+            return
 
     if result.returncode != 0:
         job.status = "FAILED"

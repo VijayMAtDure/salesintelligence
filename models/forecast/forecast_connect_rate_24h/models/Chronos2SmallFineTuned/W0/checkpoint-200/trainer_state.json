@@ -1,0 +1,64 @@
+{
+  "best_global_step": 200,
+  "best_metric": 0.1134619265794754,
+  "best_model_checkpoint": "/nvme0n1-disk/vitsale-intelligence/models/forecast_connect_rate_24h/models/Chronos2SmallFineTuned/W0/checkpoint-200",
+  "epoch": 0.2,
+  "eval_steps": 100,
+  "global_step": 200,
+  "is_hyper_param_search": false,
+  "is_local_process_zero": true,
+  "is_world_process_zero": true,
+  "log_history": [
+    {
+      "epoch": 0.1,
+      "grad_norm": 0.6801337003707886,
+      "learning_rate": 9.01e-06,
+      "loss": 0.1053238868713379,
+      "step": 100
+    },
+    {
+      "epoch": 0.1,
+      "eval_loss": 0.11543941497802734,
+      "eval_runtime": 0.0388,
+      "eval_samples_per_second": 386.131,
+      "eval_steps_per_second": 25.742,
+      "step": 100
+    },
+    {
+      "epoch": 0.2,
+      "grad_norm": 0.028671540319919586,
+      "learning_rate": 8.010000000000001e-06,
+      "loss": 0.09629818916320801,
+      "step": 200
+    },
+    {
+      "epoch": 0.2,
+      "eval_loss": 0.1134619265794754,
+      "eval_runtime": 0.0417,
+      "eval_samples_per_second": 359.526,
+      "eval_steps_per_second": 23.968,
+      "step": 200
+    }
+  ],
+  "logging_steps": 100,
+  "max_steps": 1000,
+  "num_input_tokens_seen": 0,
+  "num_train_epochs": 9223372036854775807,
+  "save_steps": 100,
+  "stateful_callbacks": {
+    "TrainerControl": {
+      "args": {
+        "should_epoch_stop": false,
+        "should_evaluate": false,
+        "should_log": false,
+        "should_save": true,
+        "should_training_stop": false
+      },
+      "attributes": {}
+    }
+  },
+  "total_flos": 0.0,
+  "train_batch_size": 32,
+  "trial_name": null,
+  "trial_params": null
+}

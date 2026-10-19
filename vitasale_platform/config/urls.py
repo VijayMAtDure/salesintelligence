@@ -8,8 +8,14 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from apps.core.health_views import live, ready
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+
+    # Kubernetes liveness/readiness probes - see apps/core/health_views.py.
+    path("health/live", live),
+    path("health/ready", ready),
 
     path("api/v1/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/v1/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

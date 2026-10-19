@@ -3,19 +3,30 @@ Shared settings — dev.py and prod.py both import from here and override only w
 
 Secrets (SECRET_KEY, DB credentials, SurrealDB creds, GPU worker auth token, OpenAI key) are
 read from environment variables via django-environ, never hardcoded — see §8 of
-DJANGO_PLATFORM_ARCHITECTURE.md ("secrets management" gap flagged there). A .env file is
-read locally for dev convenience (git-ignored); prod reads real environment variables.
+DJANGO_PLATFORM_ARCHITECTURE.md ("secrets management" gap flagged there). Locally, a
+config.ini file supplies them (git-ignored, see config.ini.example for the template); in
+k8s (config/settings/k8s.py) they arrive as real env vars from the cluster's own Secret
+instead - config.ini is loaded with setdefault(), so it only fills gaps and can never
+override a value the environment already has, meaning the same base.py works unchanged in
+both places.
 """
+import configparser
+import os
 from pathlib import Path
 
 import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+_ini_path = BASE_DIR / "config.ini"
+if _ini_path.exists():
+    _ini = configparser.ConfigParser()
+    _ini.read(_ini_path)
+    if _ini.has_section("secrets"):
+        for _key, _value in _ini["secrets"].items():
+            os.environ.setdefault(_key.upper(), _value)
+
 env = environ.Env()
-env_file = BASE_DIR / ".env"
-if env_file.exists():
-    environ.Env.read_env(str(env_file))
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="dev-only-insecure-key-set-a-real-one-in-.env")
 
@@ -138,6 +149,23 @@ GPU_WORKER_HOST = env("GPU_WORKER_HOST", default="204.12.205.2")
 # --- optional LLM narrative (architecture doc §5.2 / §6) ---
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
 
+# --- concurrency guard (apps.inference.services.predictor) ---
+# Caps concurrent real predict.py subprocess runs PER PROCESS - see predictor.py's module
+# docstring for why: each subprocess loads a full model copy, and this pod's memory limit
+# is shared across every thread/task running in it. 1 is deliberately conservative; raise
+# only alongside a real memory-limit increase, never on its own.
+MAX_CONCURRENT_INFERENCE_SUBPROCESSES = env.int(
+    "MAX_CONCURRENT_INFERENCE_SUBPROCESSES", default=1)
+
+# --- CSV upload (apps.ingestion.upload_csv) ---
+# Off by default: the web and worker pods only share a filesystem when a local PVC is
+# mounted at MEDIA_ROOT. Once the forecast web Deployment runs more than one replica
+# without that PVC (see 31-forecast.yaml), a file saved by one replica is invisible to
+# whichever pod's worker picks up the ingestion task - silently, intermittently, not as
+# an obvious error. Flip this on only once uploads go to shared object storage (S3/Blob)
+# instead of local disk, or once you're certain you're back to a single web replica.
+CSV_UPLOAD_ENABLED = env.bool("CSV_UPLOAD_ENABLED", default=False)
+
 # --- Core pipeline scripts (existing, proven vitasale_intelligence/*.py) — extract/events/
 # features/aggregates, invoked via backfill.py / run_features.py subprocess, same reuse
 # pattern as GPU_TRAINING_* below. Separate directory from GPU_TRAINING_SCRIPTS_DIR
@@ -162,6 +190,14 @@ GPU_TRAINING_PYTHON = env(
 # --- Celery (architecture doc §7) ---
 CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://localhost:6379/0")
+# Default prefetch (4) lets a worker pull several run_inference_task messages into its own
+# process before executing them one at a time (CELERY_CONCURRENCY=1) - harmless for the
+# message itself, but each task's real work (predictor.py's subprocess.run of predict.py)
+# briefly overlaps with the next one's already-materializing InferenceJob row. Confirmed
+# live: a fast burst of ~40 queued real inference jobs OOMKilled a worker pod (load-test
+# round 1). 1 forces the worker to fetch the next message only after finishing the current
+# task, removing that overlap.
+CELERY_WORKER_PREFETCH_MULTIPLIER = env.int("CELERY_WORKER_PREFETCH_MULTIPLIER", default=1)
 CELERY_TASK_ROUTES = {
     "apps.training.tasks.run_training_job_task": {"queue": "gpu_training"},
     "apps.pipeline.tasks.run_pipeline_task": {"queue": "pipeline"},

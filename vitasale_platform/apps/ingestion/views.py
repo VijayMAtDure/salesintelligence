@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -28,6 +29,12 @@ class IngestionJobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,
 
     @action(detail=False, methods=["post"], url_path="upload-csv")
     def upload_csv(self, request):
+        if not settings.CSV_UPLOAD_ENABLED:
+            return Response(
+                {"detail": "CSV upload is temporarily disabled. Use pull-db, or contact an "
+                            "administrator if you need file-based ingestion."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
         upload_serializer = CSVUploadSerializer(data=request.data)
         upload_serializer.is_valid(raise_exception=True)
         f = upload_serializer.validated_data["file"]

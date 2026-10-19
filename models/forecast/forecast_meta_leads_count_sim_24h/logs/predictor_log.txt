@@ -1,0 +1,322 @@
+Beginning AutoGluon training... Time limit = 120s
+AutoGluon will save models to '/nvme0n1-disk/vitsale-intelligence/models/forecast_meta_leads_count_sim_24h'
+=================== System Info ===================
+AutoGluon Version:  1.6.1
+Python Version:     3.10.12
+Operating System:   Linux
+Platform Machine:   x86_64
+Platform Version:   #147-Ubuntu SMP Sat Mar 15 15:53:30 UTC 2025
+CPU Count:          72
+Pytorch Version:    2.5.1+cu124
+CUDA Version:       12.4
+GPU Memory:         GPU 0: 23.64/23.64 GB
+Total GPU Memory:   Free: 23.64 GB, Allocated: 0.00 GB, Total: 23.64 GB
+GPU Count:          1
+Memory Avail:       233.68 GB / 251.75 GB (92.8%)
+Disk Space Avail:   813.48 GB / 1876.71 GB (43.3%)
+===================================================
+Setting presets to: medium_quality
+
+Fitting with arguments:
+{'enable_ensemble': True,
+ 'eval_metric': MASE,
+ 'freq': 'h',
+ 'hyperparameters': 'light',
+ 'known_covariates_names': ['hour_of_day',
+                            'weekday',
+                            'is_business_hours',
+                            'active_campaign_count'],
+ 'num_val_windows': 3,
+ 'prediction_length': 24,
+ 'quantile_levels': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+ 'random_seed': 123,
+ 'refit_every_n_windows': 1,
+ 'refit_full': False,
+ 'skip_model_selection': False,
+ 'target': 'target',
+ 'time_limit': 120,
+ 'verbosity': 2}
+
+Provided train_data has 603 rows (NaN fraction=35.3%), 1 time series. Median time series length is 603 (min=603, max=603). 
+
+Provided data contains following columns:
+	target: 'target'
+	known_covariates:
+		categorical:        []
+		continuous (float): ['hour_of_day', 'weekday', 'is_business_hours', 'active_campaign_count']
+
+To learn how to fix incorrectly inferred types, please see documentation for TimeSeriesPredictor.fit
+
+AutoGluon will gauge predictive performance using evaluation metric: 'MASE'
+	This metric's sign has been flipped to adhere to being higher_is_better. The metric score can be multiplied by -1 to get the metric value.
+===================================================
+
+Starting training. Start time is 2026-09-18 09:07:45
+Models that will be trained: ['SeasonalNaive', 'RecursiveTabular', 'DirectTabular', 'ETS', 'Theta', 'Chronos2', 'Toto2']
+Training timeseries model SeasonalNaive. Training for up to 14.7s of the 118.0s of remaining time.
+	-0.8046       = Validation score (-MASE)
+	2.86    s     = Training runtime
+	1.12    s     = Validation (prediction) runtime
+Training timeseries model RecursiveTabular. Training for up to 16.3s of the 114.0s of remaining time.
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	-0.8919       = Validation score (-MASE)
+	1.88    s     = Training runtime
+	0.17    s     = Validation (prediction) runtime
+Training timeseries model DirectTabular. Training for up to 18.7s of the 112.0s of remaining time.
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	-0.8316       = Validation score (-MASE)
+	1.62    s     = Training runtime
+	0.07    s     = Validation (prediction) runtime
+Training timeseries model ETS. Training for up to 22.1s of the 110.3s of remaining time.
+	-0.8289       = Validation score (-MASE)
+	3.38    s     = Training runtime
+	1.63    s     = Validation (prediction) runtime
+Training timeseries model Theta. Training for up to 26.3s of the 105.3s of remaining time.
+	-0.7918       = Validation score (-MASE)
+	3.27    s     = Training runtime
+	1.63    s     = Validation (prediction) runtime
+Training timeseries model Chronos2. Training for up to 33.5s of the 100.4s of remaining time.
+	-0.5879       = Validation score (-MASE)
+	4.90    s     = Training runtime
+	0.05    s     = Validation (prediction) runtime
+Training timeseries model Toto2. Training for up to 47.7s of the 95.4s of remaining time.
+	-0.7079       = Validation score (-MASE)
+	0.94    s     = Training runtime
+	0.04    s     = Validation (prediction) runtime
+Fitting 1 ensemble(s), in 1 layers.
+Training ensemble model WeightedEnsemble. Training for up to 94.4s.
+	Ensemble weights: {'Chronos2': 1.0}
+	-0.5879       = Validation score (-MASE)
+	1.06    s     = Training runtime
+	0.05    s     = Validation (prediction) runtime
+Training complete. Models trained: ['SeasonalNaive', 'RecursiveTabular', 'DirectTabular', 'ETS', 'Theta', 'Chronos2', 'Toto2', 'WeightedEnsemble']
+Total runtime: 25.03 s
+Best model: Chronos2
+Best model score: -0.5879
+Additional data provided, testing on additional data. Resulting leaderboard will be sorted according to test score (`score_test`).
+Model not specified in predict, will default to the model with the best validation score: Chronos2
+Beginning AutoGluon training... Time limit = 300s
+AutoGluon will save models to '/nvme0n1-disk/vitsale-intelligence/models/forecast_meta_leads_count_sim_24h'
+=================== System Info ===================
+AutoGluon Version:  1.6.1
+Python Version:     3.10.12
+Operating System:   Linux
+Platform Machine:   x86_64
+Platform Version:   #147-Ubuntu SMP Sat Mar 15 15:53:30 UTC 2025
+CPU Count:          72
+Pytorch Version:    2.5.1+cu124
+CUDA Version:       12.4
+GPU Memory:         GPU 0: 23.64/23.64 GB
+Total GPU Memory:   Free: 23.64 GB, Allocated: 0.00 GB, Total: 23.64 GB
+GPU Count:          1
+Memory Avail:       233.65 GB / 251.75 GB (92.8%)
+Disk Space Avail:   813.42 GB / 1876.71 GB (43.3%)
+===================================================
+Setting presets to: medium_quality
+
+Fitting with arguments:
+{'enable_ensemble': True,
+ 'eval_metric': MASE,
+ 'freq': 'h',
+ 'hyperparameters': 'light',
+ 'known_covariates_names': ['hour_of_day',
+                            'weekday',
+                            'is_business_hours',
+                            'active_campaign_count'],
+ 'num_val_windows': 3,
+ 'prediction_length': 24,
+ 'quantile_levels': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+ 'random_seed': 123,
+ 'refit_every_n_windows': 1,
+ 'refit_full': False,
+ 'skip_model_selection': False,
+ 'target': 'target',
+ 'time_limit': 300,
+ 'verbosity': 2}
+
+Provided train_data has 603 rows (NaN fraction=35.3%), 1 time series. Median time series length is 603 (min=603, max=603). 
+
+Provided data contains following columns:
+	target: 'target'
+	known_covariates:
+		categorical:        []
+		continuous (float): ['hour_of_day', 'weekday', 'is_business_hours', 'active_campaign_count']
+
+To learn how to fix incorrectly inferred types, please see documentation for TimeSeriesPredictor.fit
+
+AutoGluon will gauge predictive performance using evaluation metric: 'MASE'
+	This metric's sign has been flipped to adhere to being higher_is_better. The metric score can be multiplied by -1 to get the metric value.
+===================================================
+
+Starting training. Start time is 2026-09-18 09:17:51
+Models that will be trained: ['SeasonalNaive', 'RecursiveTabular', 'DirectTabular', 'ETS', 'Theta', 'Chronos2', 'Toto2']
+Training timeseries model SeasonalNaive. Training for up to 37.3s of the 298.1s of remaining time.
+	-0.8046       = Validation score (-MASE)
+	2.98    s     = Training runtime
+	1.23    s     = Validation (prediction) runtime
+Training timeseries model RecursiveTabular. Training for up to 42.0s of the 293.9s of remaining time.
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	-0.8919       = Validation score (-MASE)
+	1.75    s     = Training runtime
+	0.17    s     = Validation (prediction) runtime
+Training timeseries model DirectTabular. Training for up to 48.7s of the 292.0s of remaining time.
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	-0.8316       = Validation score (-MASE)
+	1.42    s     = Training runtime
+	0.08    s     = Validation (prediction) runtime
+Training timeseries model ETS. Training for up to 58.1s of the 290.5s of remaining time.
+	-0.8289       = Validation score (-MASE)
+	3.48    s     = Training runtime
+	1.74    s     = Validation (prediction) runtime
+Training timeseries model Theta. Training for up to 71.3s of the 285.3s of remaining time.
+	-0.7918       = Validation score (-MASE)
+	3.49    s     = Training runtime
+	1.76    s     = Validation (prediction) runtime
+Training timeseries model Chronos2. Training for up to 93.3s of the 280.0s of remaining time.
+	-0.5879       = Validation score (-MASE)
+	4.67    s     = Training runtime
+	0.05    s     = Validation (prediction) runtime
+Training timeseries model Toto2. Training for up to 137.7s of the 275.3s of remaining time.
+	-0.7079       = Validation score (-MASE)
+	0.84    s     = Training runtime
+	0.04    s     = Validation (prediction) runtime
+Fitting 1 ensemble(s), in 1 layers.
+Training ensemble model WeightedEnsemble. Training for up to 274.4s.
+	Ensemble weights: {'Chronos2': 1.0}
+	-0.5879       = Validation score (-MASE)
+	1.08    s     = Training runtime
+	0.05    s     = Validation (prediction) runtime
+Training complete. Models trained: ['SeasonalNaive', 'RecursiveTabular', 'DirectTabular', 'ETS', 'Theta', 'Chronos2', 'Toto2', 'WeightedEnsemble']
+Total runtime: 25.16 s
+Best model: Chronos2
+Best model score: -0.5879
+Additional data provided, testing on additional data. Resulting leaderboard will be sorted according to test score (`score_test`).
+Model not specified in predict, will default to the model with the best validation score: Chronos2
+Beginning AutoGluon training... Time limit = 300s
+AutoGluon will save models to '/nvme0n1-disk/vitsale-intelligence/models/forecast_meta_leads_count_sim_24h'
+=================== System Info ===================
+AutoGluon Version:  1.6.1
+Python Version:     3.10.12
+Operating System:   Linux
+Platform Machine:   x86_64
+Platform Version:   #147-Ubuntu SMP Sat Mar 15 15:53:30 UTC 2025
+CPU Count:          72
+Pytorch Version:    2.5.1+cu124
+CUDA Version:       12.4
+GPU Memory:         GPU 0: 23.64/23.64 GB
+Total GPU Memory:   Free: 23.64 GB, Allocated: 0.00 GB, Total: 23.64 GB
+GPU Count:          1
+Memory Avail:       230.05 GB / 251.75 GB (91.4%)
+Disk Space Avail:   810.39 GB / 1876.71 GB (43.2%)
+===================================================
+Setting presets to: best_quality
+
+Fitting with arguments:
+{'enable_ensemble': True,
+ 'eval_metric': MASE,
+ 'freq': 'h',
+ 'hyperparameters': 'default',
+ 'known_covariates_names': ['hour_of_day',
+                            'weekday',
+                            'is_business_hours',
+                            'active_campaign_count'],
+ 'num_val_windows': 3,
+ 'prediction_length': 24,
+ 'quantile_levels': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+ 'random_seed': 123,
+ 'refit_every_n_windows': 'auto',
+ 'refit_full': False,
+ 'skip_model_selection': False,
+ 'target': 'target',
+ 'time_limit': 300,
+ 'verbosity': 2}
+
+Provided train_data has 3568 rows (NaN fraction=23.9%), 3 time series. Median time series length is 1207 (min=1105, max=1256). 
+Automatically setting refit_every_n_windows=2 based on num_val_windows
+
+Provided data contains following columns:
+	target: 'target'
+	known_covariates:
+		categorical:        []
+		continuous (float): ['hour_of_day', 'weekday', 'is_business_hours', 'active_campaign_count']
+
+To learn how to fix incorrectly inferred types, please see documentation for TimeSeriesPredictor.fit
+
+AutoGluon will gauge predictive performance using evaluation metric: 'MASE'
+	This metric's sign has been flipped to adhere to being higher_is_better. The metric score can be multiplied by -1 to get the metric value.
+===================================================
+
+Starting training. Start time is 2026-09-21 10:33:47
+Models that will be trained: ['SeasonalNaive', 'RecursiveTabular', 'DirectTabular', 'DynamicOptimizedTheta', 'Chronos2', 'Chronos2SmallFineTuned', 'AutoETS', 'Toto2', 'TemporalFusionTransformer', 'DeepAR']
+Training timeseries model SeasonalNaive. Training for up to 27.1s of the 298.0s of remaining time.
+	-1.5490       = Validation score (-MASE)
+	3.06    s     = Training runtime
+	1.20    s     = Validation (prediction) runtime
+Training timeseries model RecursiveTabular. Training for up to 29.4s of the 293.8s of remaining time.
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	-1.2824       = Validation score (-MASE)
+	2.40    s     = Training runtime
+	0.15    s     = Validation (prediction) runtime
+Training timeseries model DirectTabular. Training for up to 32.4s of the 291.2s of remaining time.
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	Removed automatic date_features ['hour_of_day'] since they clash with known_covariates
+	-1.1395       = Validation score (-MASE)
+	2.41    s     = Training runtime
+	0.08    s     = Validation (prediction) runtime
+Training timeseries model DynamicOptimizedTheta. Training for up to 36.1s of the 288.7s of remaining time.
+	-2.2661       = Validation score (-MASE)
+	4.16    s     = Training runtime
+	2.04    s     = Validation (prediction) runtime
+Training timeseries model Chronos2. Training for up to 40.4s of the 282.5s of remaining time.
+	-0.9318       = Validation score (-MASE)
+	4.87    s     = Training runtime
+	0.07    s     = Validation (prediction) runtime
+Training timeseries model Chronos2SmallFineTuned. Training for up to 46.3s of the 277.6s of remaining time.
+	-0.8891       = Validation score (-MASE)
+	45.64   s     = Training runtime
+	0.05    s     = Validation (prediction) runtime
+Training timeseries model AutoETS. Training for up to 46.4s of the 231.9s of remaining time.
+	-2.2197       = Validation score (-MASE)
+	4.16    s     = Training runtime
+	1.98    s     = Validation (prediction) runtime
+Training timeseries model Toto2. Training for up to 56.4s of the 225.8s of remaining time.
+	-0.9359       = Validation score (-MASE)
+	1.15    s     = Training runtime
+	0.04    s     = Validation (prediction) runtime
+Training timeseries model TemporalFusionTransformer. Training for up to 74.9s of the 224.6s of remaining time.
+	Training on device 'gpu'
+Removing lightning_logs directory /nvme0n1-disk/vitsale-intelligence/models/forecast_meta_leads_count_sim_24h/models/TemporalFusionTransformer/W0/lightning_logs
+	Training on device 'gpu'
+Removing lightning_logs directory /nvme0n1-disk/vitsale-intelligence/models/forecast_meta_leads_count_sim_24h/models/TemporalFusionTransformer/W2/lightning_logs
+	-1.3435       = Validation score (-MASE)
+	71.03   s     = Training runtime
+	0.04    s     = Validation (prediction) runtime
+Training timeseries model DeepAR. Training for up to 76.7s of the 153.5s of remaining time.
+	Training on device 'gpu'
+Removing lightning_logs directory /nvme0n1-disk/vitsale-intelligence/models/forecast_meta_leads_count_sim_24h/models/DeepAR/W0/lightning_logs
+	Training on device 'gpu'
+Removing lightning_logs directory /nvme0n1-disk/vitsale-intelligence/models/forecast_meta_leads_count_sim_24h/models/DeepAR/W2/lightning_logs
+	-0.9318       = Validation score (-MASE)
+	72.68   s     = Training runtime
+	0.16    s     = Validation (prediction) runtime
+Fitting 1 ensemble(s), in 1 layers.
+Training ensemble model WeightedEnsemble. Training for up to 80.5s.
+	Ensemble weights: {'Chronos2SmallFineTuned': 1.0}
+	-0.8891       = Validation score (-MASE)
+	1.42    s     = Training runtime
+	0.05    s     = Validation (prediction) runtime
+Training complete. Models trained: ['SeasonalNaive', 'RecursiveTabular', 'DirectTabular', 'DynamicOptimizedTheta', 'Chronos2', 'Chronos2SmallFineTuned', 'AutoETS', 'Toto2', 'TemporalFusionTransformer', 'DeepAR', 'WeightedEnsemble']
+Total runtime: 219.45 s
+Best model: Chronos2SmallFineTuned
+Best model score: -0.8891
+Additional data provided, testing on additional data. Resulting leaderboard will be sorted according to test score (`score_test`).
+Model not specified in predict, will default to the model with the best validation score: Chronos2SmallFineTuned

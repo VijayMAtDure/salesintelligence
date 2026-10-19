@@ -30,7 +30,17 @@ class GPUUnavailableError(Exception):
 
 def check_gpu_available() -> None:
     """Hard precondition — architecture doc §7.1: never proceed on CPU. Raises rather than
-    returning a bool so the caller can't accidentally ignore a False."""
+    returning a bool so the caller can't accidentally ignore a False.
+
+    GPU_HEALTH_CHECK_MODE="stub" (only ever set by config/settings/k8s.py, for the
+    forecast-api pod that genuinely has no GPU) skips the real torch.cuda subprocess check
+    entirely rather than either lying about GPU availability or blocking every job forever.
+    It is a named, logged, opt-in mode - never a silent bypass - and every other settings
+    module (dev/server/prod) keeps the real check as the default.
+    """
+    if getattr(settings, "GPU_HEALTH_CHECK_MODE", "required") == "stub":
+        return
+
     python = settings.GPU_TRAINING_PYTHON
     result = subprocess.run(
         [python, "-c", "import torch, sys; sys.exit(0 if torch.cuda.is_available() else 1)"],
@@ -122,7 +132,8 @@ def run_training_job(job_id: int) -> None:
     _log(job, TrainingEvent.EventType.STARTED, {"track": job.track, "target": job.target})
 
     try:
-        _log(job, TrainingEvent.EventType.GPU_HEALTH_CHECK)
+        mode = getattr(settings, "GPU_HEALTH_CHECK_MODE", "required")
+        _log(job, TrainingEvent.EventType.GPU_HEALTH_CHECK, {"mode": mode})
         check_gpu_available()
     except GPUUnavailableError as e:
         job.status = "FAILED"

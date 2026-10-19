@@ -1,0 +1,17 @@
+# Real inference dependencies for scripts/predict.py (vitsale-intelligence/) - NOT needed by
+# the Django app itself, only by whatever container actually runs predict.py as a subprocess
+# (the forecast-worker role). Heavy: pulls CPU torch + the full AutoGluon model zoo, since the
+# real trained artifacts include Chronos2/DeepAR/TemporalFusionTransformer backends inside
+# their WeightedEnsemble, not just the classical (ETS/Theta) models.
+#
+# AutoGluon version matches what actually trained these artifacts (see logs/predictor_log.txt
+# inside any models/forecast/forecast_*/ directory: "AutoGluon Version: 1.6.1"). torch is left
+# unpinned - the training log showed 2.5.1, but the published autogluon.timeseries==1.6.1
+# wheel on PyPI declares torch>=2.10,<2.14 (confirmed live: pinning 2.5.1 makes pip's resolver
+# fail outright) - safe to let pip pick, since predict.py already loads with
+# require_version_match=False and never depends on an exact torch build.
+# predict.py imports autogluon.tabular unconditionally even for FORECAST-only use (it also
+# supports PROPENSITY), so it's required here too even though no propensity/ models exist yet.
+--extra-index-url https://download.pytorch.org/whl/cpu
+autogluon.timeseries==1.6.1
+autogluon.tabular==1.6.1
